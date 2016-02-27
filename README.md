@@ -28,10 +28,13 @@ How it works
 3. Use Mapquest directions API to turn into linkID (road segment)
 4. Call Mapquest directions API with beginning / end routes, avoiding linkIDs
 
+The test file is pothole_directions.py.
+
 The relevant API's are:
 * Mapquest directions: http://www.mapquestapi.com/directions/
 * Seeclickfix: http://dev.seeclickfix.com/v2/issues/
   (although we just get a data dump and parse it ourselves)
+
 TODO
 ----
 
