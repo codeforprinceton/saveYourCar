@@ -42,5 +42,5 @@ TODO
 * Waypoints (should be trivially supported, haven't checked)
 * Ability to select other categories on SeeClickFix to avoid, as well
   as waypoints to avoid
-
+* Check comments in files for further things todo.
 
