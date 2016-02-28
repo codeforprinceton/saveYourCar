@@ -79,7 +79,7 @@ class Pointy(object):
 
  
 
-def test():
+def test(journey_locations):
     # get unfixed calamities in Princeton (as human-readable addresses)
     avoid_locations = seeclickfix.get_calamity_locations()
 
@@ -89,8 +89,8 @@ def test():
     linkids = [get_linkid(latLng) for latLng in latLngs]
 
     # Route around current problem on Nassau
-    journey_locations = ["Nassau and Chestnut, Princeton, NJ",
-                         "Nassau and Scott, Princeton, NJ"]
+    # journey_locations = ["Nassau and Chestnut, Princeton, NJ",
+    #                      "Nassau and Scott, Princeton, NJ"]
 
     # routes is a list or "Route" objects, from the directions.py
     # library. It contains coordinate info for plotting
@@ -108,4 +108,5 @@ def test():
     geojsonio.display(pointies)
     
 if __name__=="__main__":
-    test()
+    import sys
+    test([sys.argv[1], sys.argv[2]])
