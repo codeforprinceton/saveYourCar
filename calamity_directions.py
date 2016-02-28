@@ -96,10 +96,12 @@ def test():
     # library. It contains coordinate info for plotting
     # and "maneuver" info for the turn-by-turn directions
     routes = get_directions(journey_locations, avoid=linkids)
+    #routes = get_directions(journey_locations)
     
     # Set up points to display calamities
     lngLats = [(lng, lat) for (lat, lng) in latLngs]
     pointies = [Pointy(lngLat) for lngLat in lngLats]
+    #pointies = []
     pointies+=routes
 
     # uncomment this line to display route
