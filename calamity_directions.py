@@ -66,25 +66,44 @@ def get_directions(locations, avoid=None):
 
 #### TEST CODE ####
 
+class Pointy(object):
+    __geo_interface__ = { 'type': 'Point' }
+
+    def __init__(self, latLng):
+        self.latLng = latLng
+
+    @property
+    def __geo_interface__(self):
+        return { 'type': 'Point',
+                 'coordinates': self.latLng }
+
+ 
+
 def test():
-    # get unfixed potholes in Princeton (as human-readable addresses)
-    avoid_locations = [seeclickfix.get_pothole_locations()]
+    # get unfixed calamities in Princeton (as human-readable addresses)
+    avoid_locations = seeclickfix.get_calamity_locations()
+
+    print avoid_locations
 
     latLngs = [geodecode(loc) for loc in avoid_locations]
     linkids = [get_linkid(latLng) for latLng in latLngs]
 
-    # There is currently a pothole at Valley & Walnut,
-    # these addresses are chosen to be near the pothole
-    journey_locations = ["Walnut & Guyot, Princeton NJ",
-                         "Loomis Ct, Princeton NJ"]
+    # Route around current problem on Nassau
+    journey_locations = ["Nassau and Chestnut, Princeton, NJ",
+                         "Nassau and Scott, Princeton, NJ"]
 
     # routes is a list or "Route" objects, from the directions.py
     # library. It contains coordinate info for plotting
     # and "maneuver" info for the turn-by-turn directions
     routes = get_directions(journey_locations, avoid=linkids)
     
-    # uncomment this line to display route
-    # geojsonio.display(routes)
+    # Set up points to display calamities
+    lngLats = [(lng, lat) for (lat, lng) in latLngs]
+    pointies = [Pointy(lngLat) for lngLat in lngLats]
+    pointies+=routes
 
+    # uncomment this line to display route
+    geojsonio.display(pointies)
+    
 if __name__=="__main__":
     test()

@@ -10,6 +10,11 @@ unfixed potholes, on Princeton's SeeClickFix website.
 Of course, the infrastructure is more general and can be extended to route 
 between points while avoiding other calamities. 
 
+New Features
+------------
+Now extended to include *Tree Down - Storm Related*. Not just bumps, but fatal
+crashes can be avoided!
+
 Build
 -----
  1. Clone this repository
@@ -23,12 +28,12 @@ Build
 How it works
 ------------
 
-1. Gets pothole data from seeclickfix.com/princeton_nj. 
+1. Gets "calamity" data from seeclickfix.com/princeton_nj. 
 2. Geodecode into lat,lng pairs.
 3. Use Mapquest directions API to turn into linkID (road segment)
 4. Call Mapquest directions API with beginning / end routes, avoiding linkIDs
 
-The test file is pothole_directions.py.
+The test file is calamity_directions.py.
 
 The relevant API's are:
 * Mapquest directions: http://www.mapquestapi.com/directions/
@@ -37,7 +42,6 @@ The relevant API's are:
 
 TODO
 ----
-
 * Proper web and map interface to support input and display directions
 * Waypoints (should be trivially supported, haven't checked)
 * Ability to select other categories on SeeClickFix to avoid, as well
