@@ -2,3 +2,12 @@
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.spaced-out {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hidden {
+  display: none;
+}

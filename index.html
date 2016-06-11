@@ -65,87 +65,91 @@
           <form>
             <fieldset class="form-group">
               <label for="startLoc" class="sr-only">Start location</label>
-              <input type="text" id="startLocation" class="form-control" placeholder="Start location" required autofocus>
+              <input type="text" id="startLocation" class="form-control" placeholder="Start location" autofocus>
             </fieldset>
 
             <fieldset class="form-group">
               <label for="endLoc" class="sr-only">End location</label>
-              <input type="text" id="endLocation" class="form-control" placeholder="End location" required>
+              <input type="text" id="endLocation" class="form-control" placeholder="End location" >
             </fieldset>
 
-            <label >
-              <strong>Avoid:</strong>
-            </label>
+            <div class="row padded">
 
-            <div class="potholeCheckbox">
-              <label>
-                <input type="checkbox" id="potholes"> Potholes
-              </label>
+              <div class='col-sm-6'>
+                <label >
+                  <strong>Avoid:</strong>
+                </label>
+
+                <div class="potholeCheckbox">
+                  <label>
+                    <input type="checkbox" id="potholes"> Potholes
+                  </label>
+                </div>
+
+                <div class="treeCheckbox">
+                  <label>
+                    <input type="checkbox" id="trees"> Trees
+                  </label>
+                </div>
+              </div>
+
+              <div class='col-sm-6 hidden' id='advanced_options'>
+                <div class='spaced-out'>
+                  <label> Route Type </label>
+
+                  <select id="routeType" name="routeType">
+                    <option value="fastest">Fastest</option>
+                    <option value="shortest">Shortest</option>
+                    <option value="pedestrian">Pedestrian</option>
+                    <option value="multimodal">Multimodal (with Transit)</option>
+                    <option value="bicycle">Bicycle</option>
+                  </select>
+                </div>
+
+                <div class='spaced-out'>
+                  <label> Time Type </label>
+
+                  <select id="timeType" name="timeType">
+                    <option value="0">None</option>
+                    <option value="1" selected="">Current Time</option>
+                    <option value="2">Custom Time</option>
+                  </select>
+                </div>
+
+                <div class='spaced-out'>
+                  <label>Date</label>
+                  <input type="date">
+                </div>
+
+                <div class='spaced-out'>
+                  <label>Time</label>
+                  <input type="time">
+                </div>
+
+                <div class='spaced-out'>
+                  <label>Unit</label>
+                  <select id="unit" name="Unit">
+                    <option value="m">Miles</option>
+                    <option value="k">Kilometers</option>
+                  </select>
+                </div>
+
+                <div class='spaced-out'>
+                  <label>Driving Style</label>
+                  <select id="drivingStyle" name="drivingStyle">
+                    <option value="2">Normal</option>
+                    <option value="1">Cautious</option>
+                    <option value="3">Aggressive</option>
+                  </select>
+                </div>
+
+
+
+              </div>
             </div>
 
-            <div class="treeCheckbox">
-              <label>
-                <input type="checkbox" id="trees"> Trees
-              </label>
-            </div>
 
-            <div>
-              <label>
-                Route Type
-              </label>
-
-              <select id="routeType" name="routeType">
-                <option value="fastest">Fastest</option>
-                <option value="shortest">Shortest</option>
-                <option value="pedestrian">Pedestrian</option>
-                <option value="multimodal">Multimodal (includes Transit)</option>
-                <option value="bicycle">Bicycle</option>
-              </select>
-            </div>
-
-            <div>
-              <label>
-                Time Type
-              </label>
-
-              <select id="timeType" name="timeType">
-                <option value="0">None</option>
-                <option value="1" selected="">Current Time</option>
-                <option value="2">Custom Time</option>
-              </select>
-            </div>
-
-            <div>
-              <label>Date</label>
-              <input type="date">
-            </div>
-
-            <div>
-              <label>Time</label>
-              <input type="time">
-            </div>
-
-            <div>
-              <label>Unit</label>
-              <select id="unit" name="Unit">
-                <option value="m">Miles</option>
-                <option value="k">Kilometers</option>
-              </select>
-            </div>
-
-            <div>
-              <label>Driving Style</label>
-              <select id="drivingStyle" name="drivingStyle">
-                <option value="2">Normal</option>
-                <option value="1">Cautious</option>
-                <option value="3">Aggressive</option>
-              </select>
-            </div>
-
-
-
-
-
+            <button class="btn btn-lg btn-secondary btn-block" id="get_advanced_options">See advanced options</button>
             <button class="btn btn-lg btn-primary btn-block" id="get_directions" type="submit" >Calamity Free Directions!</button>
           </form>
 
