@@ -37,47 +37,70 @@
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+      <![endif]-->
+
+      <!--load the Mapquest SDK -->
+      <script src="http://www.mapquestapi.com/sdk/js/v7.2.s/mqa.toolkit.js?key=bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"></script>
+
+      <script src="scripts/maps.js"></script>
+      <script src="scripts/main.js"></script>
+    <link rel="stylesheet" href="./main.css">
+
   </head>
 
   <script src="scripts/debug.js"></script>
 
   <body>
+    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="../" class="navbar-brand">Calamity Maps</a>
+        </div>
+      </div>
+    </header>
 
     <div class="container">
+      <div class="row">
+        <div class="col-sm-6 padded">
+          <form>
+            <fieldset class="form-group">
+              <label for="startLoc" class="sr-only">Start location</label>
+              <input type="text" id="startLocation" class="form-control" placeholder="Start location" required autofocus>
+            </fieldset>
 
-      <form class="form-signin">
-        <label for="startLoc" class="sr-only">Start location</label>
-        <input type="text" id="startLocation" class="form-control" placeholder="Start location" required autofocus>
+            <fieldset class="form-group">
+              <label for="endLoc" class="sr-only">End location</label>
+              <input type="text" id="endLocation" class="form-control" placeholder="End location" required>
+            </fieldset>
 
-        <label for="endLoc" class="sr-only">End location</label>
-        <input type="text" id="endLocation" class="form-control" placeholder="End location" required>
+              <label >
+                <strong>Avoid:</strong>
+              </label>
+            <div class="potholeCheckbox">
+              <label>
+                <input type="checkbox" id="potholes"> Potholes
+              </label>
+            </div>
 
-        <div class="potholeCheckbox">
-          <label>
-            <input type="checkbox" id="potholes"> Potholes
-          </label>
+            <div class="treeCheckbox">
+              <label>
+                <input type="checkbox" id="trees"> Trees
+              </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" id="get_directions" type="submit" >Calamity Free Directions!</button>
+          </form>
+
+        </div> <!-- /container -->
+
+        <div class="col-sm-6 padded">
+          <div id="map" style="width:400px; height:400px; display:block; margin-left:auto; margin-right:auto"></div>
         </div>
-        <div class="treeCheckbox">
-          <label>
-            <input type="checkbox" id="trees"> Trees
-          </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="report();">Calamity Free Directions!</button>
-      </form>
 
-    </div> <!-- /container -->
 
-    <!--load the Mapquest SDK -->
-    <script src="http://www.mapquestapi.com/sdk/js/v7.2.s/mqa.toolkit.js?key=bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"></script>
 
-    <script src="scripts/maps.js"></script>
-    <!-- <script src="scripts/main.js"></script> -->
-
-    <div class="container">
-	<div id="map" style="width:400px; height:400px; display:block; margin-left:auto; margin-right:auto"></div>
+      </div>
     </div>
-    
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 

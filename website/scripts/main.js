@@ -1,5 +1,12 @@
 var KEY = "bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"
 
+var get_directions = document.getElementById('get_directions')
+
+get_directions.addEventListener('click', function(e) {
+  e.preventDefault();
+  report();
+})
+
 latLng = geodecode("Princeton");
 get_linkid(latLng);
 get_calamity_locations(process_calamities);
@@ -22,23 +29,23 @@ function geodecode(location) {
 		    },
 		    async: false
 		   });
-    
+
     console.log(lat);
     console.log(lng);
     return [lat, lng];
 }
 
 function get_linkid(lat_lng) {
-    // 
+    //
     // Linkid identifies roadsegment for a given geo pt.
-    // 
+    //
     // Return:
     //     int: MapQuest linkid
-    
+
     var lat = lat_lng[0];
     var lng = lat_lng[1];
     var linkId = 0;
-    
+
     $.ajax({url: "http://www.mapquestapi.com/directions/v2/findlinkid",
 	    data: {"key": KEY, "lat": lat, "lng": lng},
 	    success: function(r) {
@@ -52,7 +59,7 @@ function get_linkid(lat_lng) {
 }
 
 function get_directions(locations, avoid) {
-    
+
 }
 
 
@@ -62,33 +69,33 @@ function get_calamity_locations(callback) {
     var result=[];
 
     var latLng = geodecode("Princeton, NJ");
-    
+
     lat = latLng[0];
     lng = latLng[1];
-    
+
     $.ajax({url: "http://seeclickfix.com/open311/v2/requests.json",
 	    data: { "lat": lat, "long" : lng },
 	    dataType: "jsonp",
 	    async: false,
 	    success: function(r) {
-		callback(r); 
+		callback(r);
 	    }
-	   })    
+	   })
 }
 
 function process_calamities(calamities) {
 
     // var potholes = calamities.filter(active_potholes);
     // var trees = calamities.filter(active_trees);
-    
+
     // for (var i=0; i<potholes.length; ++i) {
     // 	console.log(potholes[i])
     // }
-    
+
     // for (var i=0; i<trees.length; ++i) {
     // 	console.log(trees[i])
     // }
-	
+
     for (var i=0; i<calamities.length; i++) {
 	console.log(i, calamities[i].service_type);
 	console.log(i, calamities[i].status);
