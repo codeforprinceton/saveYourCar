@@ -111,23 +111,60 @@ function find_route() {
 			     }
 			     else {
 				 get_all_calamities(shapePts, function(all_issues) {
-				     linkIds = [];
-				     for (var i=0; i<all_issues.length; ++i) {
-					 console.log("Link", all_issues[i].lat, all_issues[i].lng);
-					 linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
-				     }
-				     get_directions_async(from, to, linkIds,
-							  function(route) {
-							      displayNarrative(route);
-							      newShapePts = route.route.shape.shapePoints;
-							      display_route(from, to, newShapePts);
-							  }
-							 );
+
+				     console.log("IN PROCESSING", all_issues.length);
+				     
+				     get_all_linkIds(all_issues, function(linkIds) {
+					 get_directions_async(from, to, linkIds,
+							      function(route) {
+								  displayNarrative(route);
+								  newShapePts = route.route.shape.shapePoints;
+								  display_route(from, to, newShapePts);
+							      }
+							     );
+					 
+				     });
+				     // linkIds = [];
+				     // for (var i=0; i<all_issues.length; ++i) {
+				     // 	 console.log("Link", all_issues[i].lat, all_issues[i].lng);
+				     // 	 linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
+				     // }
 				 });
 			     }
 			 });	 			    
 }			 
 
+function get_all_linkIds(all_issues, callback) {
+
+    var linkId = [];
+
+    var promises = [];
+    console.log("LENGTH OF ALL ISSUES", all_issues.length);
+    for (var i=0; i<all_issues.length; ++i) {
+
+	lat = all_issues[i].lat;
+	lng = all_issues[i].lng;
+	var request = $.ajax({url: "http://www.mapquestapi.com/directions/v2/findlinkid",
+			      data: {"key": KEY, "lat": lat, "lng": lng },
+			      success: function(r) {
+				  linkId.push(r.linkId);
+				  console.log("LENGTH OF LINKID", linkId.length);
+				  console.log("r", r);
+			      },
+			      async: true
+			     });
+	promises.push(request);
+    }
+    
+    $.when.apply(null, promises).done(
+
+	function () {
+	    console.log("in get all linkids");
+	    console.log(linkId.length);
+	    
+	    callback(linkId);
+	});
+}
 
 
 function get_all_calamities(shapePts, callback) {
@@ -152,24 +189,75 @@ function get_all_calamities(shapePts, callback) {
 	    console.log(i, unique_place_urls[i]);
 	
 	var all_issues = [];
+
+	get_all_calamities_in_place(unique_place_urls, callback);
 	
-	for (var i=0; i<unique_place_urls.length; ++i) {
-	    var issues = get_calamity_in_place(unique_place_urls[i]);
-	    console.log(unique_place_urls[i]);
-	    issues = issues.filter(active_issues);
+	// for (var i=0; i<unique_place_urls.length; ++i) {
+	//     var issues = get_calamity_in_place(unique_place_urls[i]);
+	//     console.log(unique_place_urls[i]);
+	//     issues = issues.filter(active_issues);
 
-	    if (!notDisplayCalamities)
-		display_calamities(issues);
+	//     if (!notDisplayCalamities)
+	// 	if (i%5 == 0)
+	// 	    display_calamities(issues);
 	    
-	    all_issues = all_issues.concat(issues);
-	}
-    
-	for (var i=0; i<all_issues.length; ++i)
-	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
+	//     all_issues = all_issues.concat(issues);
+	// }
+	// display_calamities(issues);
 
-	callback(all_issues);
+	
+	// for (var i=0; i<all_issues.length; ++i)
+	//     console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
+
+	// callback(all_issues);
     });
 }
+
+function get_all_calamities_in_place(unique_place_urls, callback) {
+    var promises = [];
+    
+    var notDisplayCalamities = document.getElementById("notDisplayCalamities").checked;
+
+    var all_issues = [];
+    
+    for (var i=0; i<unique_place_urls.length; ++i) {
+
+	
+	console.log("IN UNIQUE PLACE", unique_place_urls[i]);
+	var issues = [];
+	var place_url = unique_place_urls[i];
+	var request = $.ajax({url: "https://seeclickfix.com/api/v2/issues",
+			      dataType: "json",
+			      data: { place_url: place_url,
+				    },
+			      async: true,
+			      success: function(r) {
+				  //result = r;
+				  issues = r.issues;
+				  issues = issues.filter(active_issues);
+
+				  if (!notDisplayCalamities)
+				      display_calamities(issues);
+
+				  all_issues = all_issues.concat(issues);
+
+				  
+				  //console.log("ALL ISSUES LENGTH", all_issues.length);
+			      }
+			     });
+	promises.push(request);
+    }
+
+    // check all promises are fulfilled
+    $.when.apply(null, promises).done(
+	function() {
+	    //console.log("PROMISES DONE???", all_issues.length);
+	    callback(all_issues);
+	}
+	//callback(all_issues)
+    );
+}
+
 
 
 // console.log("shapePts", shapePts.length);
@@ -397,7 +485,7 @@ function get_directions_async(from, to, avoidLinkIds,
     var route;
 
     console.log("avoid", avoidLinkIds.join());
-    
+    console.log("avoid links", avoidLinkIds.length);
     for (var i=0; i<avoidLinkIds.length; ++i)
 	console.log("avoid", avoidLinkIds[i]);
     
