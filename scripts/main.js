@@ -1,10 +1,12 @@
 var KEY = "bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"
 var INC = 0.005 // spacing of pts along route before checking for new place_url
+                // increasing this will speed things up, but might mean that some calamities are missed.
 var MAP; // global map, since I don't know how else to share it
-var MAX_LOCS = 3;
+var MAX_LOCS = 3; // This sets the number of places near each pt to look at for calamities.
+                  // Decrease this to 1 to speed things up.
 
-var PLACE_URLS=[];
-var COUNTER = 0;
+// var PLACE_URLS=[];
+// var COUNTER = 0;
 
 window.onload = function() {
 
