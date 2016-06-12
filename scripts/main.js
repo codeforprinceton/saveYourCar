@@ -371,6 +371,8 @@ function display_route(from, to, shapePoints) {
 	// uses the MQA.RouteCollection object to add the custom route and POIs to the map
 	fromLatLng = geodecode(from);
 	toLatLng = geodecode(to);
+
+	console.log("from", fromLatLng[0]);
 	
 	// var poiFrom = new MQA.Poi({ lat:fromLatLng[0],
 	// 			    lng:fromLatLng[1] });
