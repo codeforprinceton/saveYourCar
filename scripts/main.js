@@ -5,7 +5,7 @@ var MAP; // global map, since I don't know how else to share it
 var MAX_LOCS = 3; // This sets the number of places near each pt to look at for calamities.
                   // Decrease this to 1 to speed things up.
 
-// var PLACE_URLS=[];
+var PLACE_URLS=[];
 // var COUNTER = 0;
 
 window.onload = function() {
@@ -95,8 +95,7 @@ function find_route() {
     // route = get_directions(from, to, []);
     get_directions_async(from, to, [],
 			 function(route) {
-			         shapePts = route.route.shape.shapePoints;
-
+			     shapePts = route.route.shape.shapePoints;
 			     if (notAvoidCalamities) {
 				 console.log(shapePts);
 				 
@@ -104,69 +103,72 @@ function find_route() {
 				 displayNarrative(route);
 				 
 				 if (!notDisplayCalamities) {
-				     var all_issues = get_all_calamities(shapePts);
+				     //var all_issues = get_all_calamities(shapePts, function() {} );
+				     get_all_calamities(shapePts, function(all_issues) {
+					 // no further processing
+				     } );
 				 }
 			     }
 			     else {
-				 spacedPts = get_spaced_pts(shapePts);
-				 place_urls = get_place_urls(spacedPts);
-				 unique_place_urls = uniquify(place_urls);
-				 
-				 for (var i=0; i<unique_place_urls.length; ++i)
-				     console.log(i, unique_place_urls[i]);
-				 
-				 var all_issues = get_all_calamities(shapePts)
-				 
-				 linkIds = []
-				 for (var i=0; i<all_issues.length; ++i) {
-				     console.log("Link", all_issues[i].lat, all_issues[i].lng);
-				     linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
-				 }
-				 get_directions_async(from, to, linkIds,
-						      function(route) {
-							  displayNarrative(route);
-							  
-							  console.log("route", route);
-							  console.log("route", route.route);
-							  console.log("route", route.route.shape);
-							  
-							  newShapePts = route.route.shape.shapePoints;
-							  display_route(from, to, newShapePts);
-
-
-						      }
-						     );
+				 get_all_calamities(shapePts, function(all_issues) {
+				     linkIds = [];
+				     for (var i=0; i<all_issues.length; ++i) {
+					 console.log("Link", all_issues[i].lat, all_issues[i].lng);
+					 linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
+				     }
+				     get_directions_async(from, to, linkIds,
+							  function(route) {
+							      displayNarrative(route);
+							      newShapePts = route.route.shape.shapePoints;
+							      display_route(from, to, newShapePts);
+							  }
+							 );
+				 });
 			     }
-
-			     
-			 }
-			);
-}
+			 });	 			    
+}			 
 
 
-function get_all_calamities(shapePts) {
+
+function get_all_calamities(shapePts, callback) {
+
     spacedPts = get_spaced_pts(shapePts);
-    place_urls = get_place_urls(spacedPts);
-    unique_place_urls = uniquify(place_urls);
-    
-    for (var i=0; i<unique_place_urls.length; ++i)
-	console.log(i, unique_place_urls[i]);
-    
-    var all_issues = [];
-    
-    for (var i=0; i<unique_place_urls.length; ++i) {
-	var issues = get_calamity_in_place(unique_place_urls[i]);
-	console.log(unique_place_urls[i]);
-	issues = issues.filter(active_issues);
-	display_calamities(issues);
-	
-	all_issues = all_issues.concat(issues);
-    }
-    
-    for (var i=0; i<all_issues.length; ++i)
-	console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
 
-    return all_issues;
+    //place_urls = get_place_urls(spacedPts);
+    PLACE_URLS = [];
+    var promises = get_place_urls(spacedPts);
+
+    var place_urls = [];
+    var notDisplayCalamities = document.getElementById("notDisplayCalamities").checked;
+
+    $.when.apply(null, promises).done( function() {
+
+	place_urls = PLACE_URLS;	
+	console.log("place_urls length", place_urls.length);
+    
+	unique_place_urls = uniquify(place_urls);
+	
+	for (var i=0; i<unique_place_urls.length; ++i)
+	    console.log(i, unique_place_urls[i]);
+	
+	var all_issues = [];
+	
+	for (var i=0; i<unique_place_urls.length; ++i) {
+	    var issues = get_calamity_in_place(unique_place_urls[i]);
+	    console.log(unique_place_urls[i]);
+	    issues = issues.filter(active_issues);
+
+	    if (!notDisplayCalamities)
+		display_calamities(issues);
+	    
+	    all_issues = all_issues.concat(issues);
+	}
+    
+	for (var i=0; i<all_issues.length; ++i)
+	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
+
+	callback(all_issues);
+    });
 }
 
 
@@ -199,58 +201,63 @@ function get_all_calamities(shapePts) {
 // for (var i=0; i<linkIds.length; ++i)
 //     console.log(i, linkIds[i]);
 
-function get_place_urls2(spacedPts) {
+// function get_place_urls2(spacedPts) {
     
-    spacedLats = spacedPts[0];
-    spacedLngs = spacedPts[1];
+//     spacedLats = spacedPts[0];
+//     spacedLngs = spacedPts[1];
 
-    $.ajax({url: "https://seeclickfix.com/api/v2/places",
-	    dataType: "json",
-	    data: { lat: spacedLats[COUNTER],
-		    lng: spacedLngs[COUNTER] },
+//     $.ajax({url: "https://seeclickfix.com/api/v2/places",
+// 	    dataType: "json",
+// 	    data: { lat: spacedLats[COUNTER],
+// 		    lng: spacedLngs[COUNTER] },
 
-	    success: function(r) {
-		result = r;
-		PLACE_URLS.push(result.places[0].url_name);
-		++COUNTER;
+// 	    success: function(r) {
+// 		result = r;
+// 		PLACE_URLS.push(result.places[0].url_name);
+// 		++COUNTER;
 
-		console.log("success", COUNTER, PLACE_URLS.length);
-		if (COUNTER < spacedLats.length)
-		    get_place_urls2(spacedPts);	
-	    }
-	   });
-}
+// 		console.log("success", COUNTER, PLACE_URLS.length);
+// 		if (COUNTER < spacedLats.length)
+// 		    get_place_urls2(spacedPts);	
+// 	    }
+// 	   });
+// }
 
 function get_place_urls(spacedPts) {
 
     spacedLats = spacedPts[0];
     spacedLngs = spacedPts[1];
 
-    place_urls = [];
+    //place_urls = [];
+    var promises = []
+    
     for (var i=0; i<spacedLats.length; ++i) {
 	
 	var result;
-	$.ajax({url: "https://seeclickfix.com/api/v2/places",
+	var request = $.ajax({url: "https://seeclickfix.com/api/v2/places",
 		dataType: "json",
 		data: { lat: spacedLats[i],
 			lng: spacedLngs[i] },
-		async: false,
+		async: true,
 		success: function(r) {
 		    result = r;
+		    max_loc = Math.min(result.places.length, MAX_LOCS);
+		    for (var j=0; j<max_loc; ++j) {
+			PLACE_URLS.push(result.places[j].url_name);
+		    }
 		}
 	       });
-
-	max_loc = Math.min(result.places.length, MAX_LOCS);
-	for (var j=0; j<max_loc; ++j) {
-	    place_urls.push(result.places[j].url_name);
-	}
+	promises.push(request);
     }
+
+    return promises;
+    //var final_place_urls;
     // console.log("Place URLS");
     // console.log("lengths", spacedLats.length, place_urls.length);
-    for (var i=0; i<place_urls.length; ++i) {
-     	console.log(i, place_urls[i]);
-    }
-    return place_urls;
+    // for (var i=0; i<place_urls.length; ++i) {
+    //  	console.log(i, place_urls[i]);
+    // }
+    // return place_urls;
 }
 
 function uniquify(array) {
