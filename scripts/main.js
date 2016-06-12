@@ -102,7 +102,7 @@ function find_route() {
     if (avoidCalamities == false) {
 	console.log(shapePts);
 
-	display_route(shapePts);
+	display_route(from, to, shapePts);
 	displayNarrative(route);
     }
     else {
@@ -149,7 +149,7 @@ function find_route() {
 	displayNarrative(route);
 	
 	newShapePts = route.route.shape.shapePoints;
-	display_route(newShapePts);
+	display_route(from, to, newShapePts);
     }
 
 }
@@ -364,13 +364,23 @@ function get_directions(from, to, avoidLinkIds) {
     return route;
 }
 
-function display_route(shapePoints) {
+function display_route(from, to, shapePoints) {
     
     MQA.withModule('new-route-collection', function() {
 	
 	// uses the MQA.RouteCollection object to add the custom route and POIs to the map
+	fromLatLng = geodecode(from);
+	toLatLng = geodecode(to);
+	
+	var poiFrom = new MQA.Poi({ lat:fromLatLng[0],
+				    lng:fromLatLng[1] });
+	poiFrom.setRollOverContent(from);
+	var poiTo = new MQA.Poi({ lat:toLatLng[0],
+				    lng:toLatLng[1] });
+	poiTo.setRollOverContent(to);
+	
 	var rc = new MQA.RouteCollection({
-	    pois: [],
+	    pois: [poiFrom, poiTo],
 	    line: shapePoints,
 	    display: {
 		color: '#404040',
