@@ -92,14 +92,14 @@ function find_route() {
     var from = document.getElementById("startLocation").value;
     var to = document.getElementById("endLocation").value;
 
-    var avoidCalamities = document.getElementById("avoidCalamities").checked;
+    var notAvoidCalamities = document.getElementById("notAvoidCalamities").checked;
 
-    console.log("checked", avoidCalamities);
+    console.log("checked", notAvoidCalamities);
 
     route = get_directions(from, to, []);
     shapePts = route.route.shape.shapePoints;
 
-    if (avoidCalamities == false) {
+    if (notAvoidCalamities) {
 	console.log(shapePts);
 
 	display_route(from, to, shapePts);
