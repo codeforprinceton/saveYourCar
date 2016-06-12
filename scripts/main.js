@@ -18,6 +18,9 @@ window.onload = function() {
     get_directions.addEventListener('click', function(e) {
 	MAP.removeAllShapes();
 	e.preventDefault();
+
+	document.getElementById('route-results').innerHTML = "";
+
 	find_route();
     });
 
@@ -175,6 +178,9 @@ function get_all_calamities(shapePts, callback) {
     PLACE_URLS = [];
     var promises = get_place_urls(spacedPts);
 
+    // clean up text
+    document.getElementById("calamity-processing").textContent = "";
+
     var place_urls = [];
     var notDisplayCalamities = document.getElementById("notDisplayCalamities").checked;
 
@@ -225,33 +231,46 @@ function get_all_calamities_in_place(unique_place_urls, callback) {
 	
 	console.log("IN UNIQUE PLACE", unique_place_urls[i]);
 	var issues = [];
-	var place_url = unique_place_urls[i];
-	var request = $.ajax({url: "https://seeclickfix.com/api/v2/issues",
-			      dataType: "json",
-			      data: { place_url: place_url,
-				    },
-			      async: true,
-			      success: function(r) {
-				  //result = r;
-				  issues = r.issues;
-				  issues = issues.filter(active_issues);
+	var place_urli = unique_place_urls[i];
 
-				  if (!notDisplayCalamities)
-				      display_calamities(issues);
-
-				  all_issues = all_issues.concat(issues);
-
-				  
-				  //console.log("ALL ISSUES LENGTH", all_issues.length);
-			      }
-			     });
-	promises.push(request);
+	(function(counter) {
+	    var request = $.ajax({url: "https://seeclickfix.com/api/v2/issues",
+				  dataType: "json",
+				  data: { place_url: place_urli,
+					},
+				  async: true,
+				  success: function(r) {
+				      
+				      issues = r.issues;
+				      issues = issues.filter(active_issues);
+				      
+				      if (!notDisplayCalamities)
+					  display_calamities(issues);
+				      
+				      all_issues = all_issues.concat(issues);
+				      
+				      for (var j=0; j<issues.length; ++j) {
+					  var text = "Querying: " + " " + unique_place_urls[counter];
+					  text += " (" + Math.round((counter * 100)/unique_place_urls.length) + "%)";
+					  document.getElementById("calamity-processing").textContent = text;
+				      }
+				      console.log("querying", issues);
+				  }
+				 });
+	    promises.push(request);
+	} (i) );
+	
     }
 
     // check all promises are fulfilled
     $.when.apply(null, promises).done(
 	function() {
 	    //console.log("PROMISES DONE???", all_issues.length);
+	    
+	    // clean up text
+	    document.getElementById("calamity-processing").textContent = "";
+
+	    
 	    callback(all_issues);
 	}
 	//callback(all_issues)
@@ -322,21 +341,34 @@ function get_place_urls(spacedPts) {
     for (var i=0; i<spacedLats.length; ++i) {
 	
 	var result;
-	var request = $.ajax({url: "https://seeclickfix.com/api/v2/places",
-		dataType: "json",
-		data: { lat: spacedLats[i],
-			lng: spacedLngs[i] },
-		async: true,
-		success: function(r) {
-		    result = r;
-		    max_loc = Math.min(result.places.length, MAX_LOCS);
-		    for (var j=0; j<max_loc; ++j) {
-			console.log("Spaced Point", i, result.places[j].url_name); 
-			PLACE_URLS.push(result.places[j].url_name);
-		    }
-		}
-	       });
-	promises.push(request);
+
+	(function(counter) {
+	    var request = $.ajax({url: "https://seeclickfix.com/api/v2/places",
+				  dataType: "json",
+				  data: { lat: spacedLats[i],
+					  lng: spacedLngs[i] },
+				  async: true,
+				  success: function(r) {
+				      result = r;
+				      max_loc = Math.min(result.places.length, MAX_LOCS);
+				      for (var j=0; j<max_loc; ++j) {
+					  console.log("Spaced Point", i, result.places[j].url_name);
+					  
+					  // var html = ""
+					  // html = html.concat("<p>", "Processing: ", result.place[j].url_name, "</p>");
+					  text = "Locating: " + result.places[j].url_name;
+					  text += " (" + Math.round((counter * 100)/spacedLats.length) + "%)";
+
+					  document.getElementById("calamity-processing").textContent = text;
+			
+					  PLACE_URLS.push(result.places[j].url_name);
+				      }
+				  }
+				 });
+	    promises.push(request);
+
+	} (i) );
+	
     }
 
     return promises;
