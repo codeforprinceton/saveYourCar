@@ -270,7 +270,6 @@ function get_all_calamities_in_place(unique_place_urls, callback) {
 	    // clean up text
 	    document.getElementById("calamity-processing").textContent = "";
 
-	    
 	    callback(all_issues);
 	}
 	//callback(all_issues)
@@ -352,7 +351,7 @@ function get_place_urls(spacedPts) {
 				      result = r;
 				      max_loc = Math.min(result.places.length, MAX_LOCS);
 				      for (var j=0; j<max_loc; ++j) {
-					  console.log("Spaced Point", i, result.places[j].url_name);
+					  console.log("Spaced Point", counter, result.places[j].url_name);
 					  
 					  // var html = ""
 					  // html = html.concat("<p>", "Processing: ", result.place[j].url_name, "</p>");
