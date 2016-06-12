@@ -42,14 +42,6 @@ function report() {
     console.log(endLocation);    
 };
 
-// locations = ["Princeton, NJ", "Philadelphia, PA"];
-// from = "Princeton, NJ";
-// to = "Philadelphia, PA";
-avoidLinkIds = [];
-
-// console.log(geodecode(from));
-// console.log(geodecode(to));
-
 
 function draw_map () {
 
@@ -100,86 +92,81 @@ function find_route() {
 
     console.log("checked", notAvoidCalamities);
 
-    route = get_directions(from, to, []);
-    shapePts = route.route.shape.shapePoints;
+    // route = get_directions(from, to, []);
+    get_directions_async(from, to, [],
+			 function(route) {
+			         shapePts = route.route.shape.shapePoints;
 
-    console.log("route 1", route);
-    console.log("route 1", route.route);
-    console.log("route 1", route.route.shape);
+			     if (notAvoidCalamities) {
+				 console.log(shapePts);
+				 
+				 display_route(from, to, shapePts);
+				 displayNarrative(route);
+				 
+				 if (!notDisplayCalamities) {
+				     var all_issues = get_all_calamities(shapePts);
+				 }
+			     }
+			     else {
+				 spacedPts = get_spaced_pts(shapePts);
+				 place_urls = get_place_urls(spacedPts);
+				 unique_place_urls = uniquify(place_urls);
+				 
+				 for (var i=0; i<unique_place_urls.length; ++i)
+				     console.log(i, unique_place_urls[i]);
+				 
+				 var all_issues = get_all_calamities(shapePts)
+				 
+				 linkIds = []
+				 for (var i=0; i<all_issues.length; ++i) {
+				     console.log("Link", all_issues[i].lat, all_issues[i].lng);
+				     linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
+				 }
+				 get_directions_async(from, to, linkIds,
+						      function(route) {
+							  displayNarrative(route);
+							  
+							  console.log("route", route);
+							  console.log("route", route.route);
+							  console.log("route", route.route.shape);
+							  
+							  newShapePts = route.route.shape.shapePoints;
+							  display_route(from, to, newShapePts);
 
-    if (notAvoidCalamities) {
-	console.log(shapePts);
-	
-	display_route(from, to, shapePts);
-	displayNarrative(route);
 
-	if (!notDisplayCalamities) {
-	spacedPts = get_spaced_pts(shapePts);
-	place_urls = get_place_urls(spacedPts);
-	unique_place_urls = uniquify(place_urls);
-	
-	for (var i=0; i<unique_place_urls.length; ++i)
-	    console.log(i, unique_place_urls[i]);
+						      }
+						     );
+			     }
 
-	var all_issues = [];
+			     
+			 }
+			);
+}
+
+
+function get_all_calamities(shapePts) {
+    spacedPts = get_spaced_pts(shapePts);
+    place_urls = get_place_urls(spacedPts);
+    unique_place_urls = uniquify(place_urls);
+    
+    for (var i=0; i<unique_place_urls.length; ++i)
+	console.log(i, unique_place_urls[i]);
+    
+    var all_issues = [];
+    
+    for (var i=0; i<unique_place_urls.length; ++i) {
+	var issues = get_calamity_in_place(unique_place_urls[i]);
+	console.log(unique_place_urls[i]);
+	issues = issues.filter(active_issues);
+	display_calamities(issues);
 	
-	for (var i=0; i<unique_place_urls.length; ++i) {
-	    var issues = get_calamity_in_place(unique_place_urls[i]);
-	    console.log(unique_place_urls[i]);
-	    issues = issues.filter(active_issues);
-	    display_calamities(issues);
-	    
-	    all_issues = all_issues.concat(issues);
-	}
-	
-	for (var i=0; i<all_issues.length; ++i)
-	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
-	
-	display_calamities(all_issues);	    
-	}
+	all_issues = all_issues.concat(issues);
     }
-    else {
-	spacedPts = get_spaced_pts(shapePts);
-	place_urls = get_place_urls(spacedPts);
-	unique_place_urls = uniquify(place_urls);
-	
-	for (var i=0; i<unique_place_urls.length; ++i)
-	    console.log(i, unique_place_urls[i]);
+    
+    for (var i=0; i<all_issues.length; ++i)
+	console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
 
-	var all_issues = [];
-	
-	for (var i=0; i<unique_place_urls.length; ++i) {
-	    var issues = get_calamity_in_place(unique_place_urls[i]);
-	    console.log(unique_place_urls[i]);
-	    issues = issues.filter(active_issues);
-
-	    if (!notDisplayCalamities)
-		display_calamities(issues);
-	    
-	    all_issues = all_issues.concat(issues);
-	}
-	
-	for (var i=0; i<all_issues.length; ++i)
-	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
-	
-	// display_calamities(all_issues);
-	
-	linkIds = []
-	for (var i=0; i<all_issues.length; ++i) {
-	    console.log("Link", all_issues[i].lat, all_issues[i].lng);
-	    linkIds.push(get_linkid(all_issues[i].lat, all_issues[i].lng));
-	}
-	route = get_directions(from, to, linkIds);
-	displayNarrative(route);
-
-	console.log("route", route);
-	console.log("route", route.route);
-	console.log("route", route.route.shape);
-	
-	newShapePts = route.route.shape.shapePoints;
-	display_route(from, to, newShapePts);
-    }
-
+    return all_issues;
 }
 
 
@@ -394,6 +381,31 @@ function get_directions(from, to, avoidLinkIds) {
     // 	console.log(shape.shapePoints[i]);
     // }
     return route;
+}
+
+function get_directions_async(from, to, avoidLinkIds,
+			      success_callback) {
+    var url = 'https://www.mapquestapi.com/directions/v2/route';
+    
+    var route;
+
+    console.log("avoid", avoidLinkIds.join());
+    
+    for (var i=0; i<avoidLinkIds.length; ++i)
+	console.log("avoid", avoidLinkIds[i]);
+    
+    $.ajax({
+	url: url,
+	data: { "from": from,
+		"to": to,
+		"key" : KEY,
+		"shapeFormat": "raw",
+		"generalize": 0,
+		"mustAvoidLinkIds" : avoidLinkIds.join()
+	      },
+	success: success_callback,
+	async: true
+    });
 }
 
 function display_route(from, to, shapePoints) {
