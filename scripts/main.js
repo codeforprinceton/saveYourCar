@@ -225,6 +225,7 @@ function get_place_urls(spacedPts) {
 		}
 	       });
 	place_urls.push(result.places[0].url_name)
+	place_urls.push(result.places[1].url_name)
     }
     // console.log("Place URLS");
     // console.log("lengths", spacedLats.length, place_urls.length);
