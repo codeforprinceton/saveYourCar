@@ -27,7 +27,7 @@
     <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="maps.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -41,9 +41,8 @@
 
       <!--load the Mapquest SDK -->
       <script src="http://www.mapquestapi.com/sdk/js/v7.2.s/mqa.toolkit.js?key=bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"></script>
+    <script src="scripts/debug.js"></script>
 
-      <script src="scripts/maps.js"></script>
-      <script src="scripts/main.js"></script>
       <link rel="stylesheet" href="./main.css">
 
   </head>
@@ -51,118 +50,115 @@
   <script src="scripts/debug.js"></script>
 
   <body>
-    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="../" class="navbar-brand">Calamity Maps</a>
-        </div>
-      </div>
-    </header>
-
+    <!-- <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner"> -->
+    <!--   <div class="container"> -->
+    <!--     <div class="navbar-header"> -->
+    <!--       <a href="../" class="navbar-brand">Calamity Maps</a> -->
+    <!--     </div> -->
+    <!--   </div> -->
+    <!-- </header> -->
+    
     <div class="container">
       <div class="row">
         <div class="col-sm-6 padded">
-          <form>
+          <form class="form-group">
             <fieldset class="form-group">
               <label for="startLoc" class="sr-only">Start location</label>
               <input type="text" id="startLocation" class="form-control" placeholder="Start location" autofocus>
             </fieldset>
-
+	    
             <fieldset class="form-group">
               <label for="endLoc" class="sr-only">End location</label>
               <input type="text" id="endLocation" class="form-control" placeholder="End location" >
             </fieldset>
-
+	    
             <div class="row padded">
-
+	      
               <div class='col-sm-6'>
-                <label >
-                  <strong>Avoid:</strong>
-                </label>
+                <!-- <label > -->
+                <!--   <strong>Avoid:</strong> -->
+                <!-- </label> -->
 
-                <div class="potholeCheckbox">
+                <div class="avoidCalamitiesCheckbox">
                   <label>
-                    <input type="checkbox" id="potholes"> Potholes
-                  </label>
-                </div>
-
-                <div class="treeCheckbox">
-                  <label>
-                    <input type="checkbox" id="trees"> Trees
+                    <input type="checkbox" id="avoidCalamities"> Avoid Calamities
                   </label>
                 </div>
               </div>
 
-              <div class='col-sm-6 hidden' id='advanced_options'>
-                <div class='spaced-out'>
-                  <label> Route Type </label>
+              <!-- <div class='col-sm-6 hidden' id='advanced_options'> -->
+              <!--   <div class='spaced-out'> -->
+              <!--     <label> Route Type </label> -->
+		  
+              <!--     <select id="routeType" name="routeType"> -->
+              <!--       <option value="fastest">Fastest</option> -->
+              <!--       <option value="shortest">Shortest</option> -->
+              <!--       <option value="pedestrian">Pedestrian</option> -->
+              <!--       <option value="multimodal">Multimodal (with Transit)</option> -->
+              <!--       <option value="bicycle">Bicycle</option> -->
+              <!--     </select> -->
+              <!--   </div> -->
+		
+              <!--   <div class='spaced-out'> -->
+              <!--     <label> Time Type </label> -->
+		  
+              <!--     <select id="timeType" name="timeType"> -->
+              <!--       <option value="0">None</option> -->
+              <!--       <option value="1" selected="">Current Time</option> -->
+              <!--       <option value="2">Custom Time</option> -->
+              <!--     </select> -->
+              <!--   </div> -->
 
-                  <select id="routeType" name="routeType">
-                    <option value="fastest">Fastest</option>
-                    <option value="shortest">Shortest</option>
-                    <option value="pedestrian">Pedestrian</option>
-                    <option value="multimodal">Multimodal (with Transit)</option>
-                    <option value="bicycle">Bicycle</option>
-                  </select>
-                </div>
+              <!--   <div class='spaced-out'> -->
+              <!--     <label>Date</label> -->
+              <!--     <input type="date"> -->
+              <!--   </div> -->
+		
+              <!--   <div class='spaced-out'> -->
+              <!--     <label>Time</label> -->
+              <!--     <input type="time"> -->
+              <!--   </div> -->
 
-                <div class='spaced-out'>
-                  <label> Time Type </label>
+              <!--   <div class='spaced-out'> -->
+              <!--     <label>Unit</label> -->
+              <!--     <select id="unit" name="Unit"> -->
+              <!--       <option value="m">Miles</option> -->
+              <!--       <option value="k">Kilometers</option> -->
+              <!--     </select> -->
+              <!--   </div> -->
 
-                  <select id="timeType" name="timeType">
-                    <option value="0">None</option>
-                    <option value="1" selected="">Current Time</option>
-                    <option value="2">Custom Time</option>
-                  </select>
-                </div>
-
-                <div class='spaced-out'>
-                  <label>Date</label>
-                  <input type="date">
-                </div>
-
-                <div class='spaced-out'>
-                  <label>Time</label>
-                  <input type="time">
-                </div>
-
-                <div class='spaced-out'>
-                  <label>Unit</label>
-                  <select id="unit" name="Unit">
-                    <option value="m">Miles</option>
-                    <option value="k">Kilometers</option>
-                  </select>
-                </div>
-
-                <div class='spaced-out'>
-                  <label>Driving Style</label>
-                  <select id="drivingStyle" name="drivingStyle">
-                    <option value="2">Normal</option>
-                    <option value="1">Cautious</option>
-                    <option value="3">Aggressive</option>
-                  </select>
-                </div>
+              <!--   <div class='spaced-out'> -->
+              <!--     <label>Driving Style</label> -->
+              <!--     <select id="drivingStyle" name="drivingStyle"> -->
+              <!--       <option value="2">Normal</option> -->
+              <!--       <option value="1">Cautious</option> -->
+              <!--       <option value="3">Aggressive</option> -->
+              <!--     </select> -->
+              <!--   </div> -->
+		
 
 
+              <!-- </div> -->
 
-              </div>
             </div>
-
-
-            <button class="btn btn-lg btn-secondary btn-block" id="get_advanced_options">See advanced options</button>
-            <button class="btn btn-lg btn-primary btn-block" id="get_directions" type="submit" >Calamity Free Directions!</button>
+	    
+            <!-- <button class="btn btn-lg btn-secondary btn-block" id="get_advanced_options">See advanced options</button> -->
+            <button class="btn btn-lg btn-primary btn-block" id="get_directions" type="submit">Calamity Free Directions!</button>
           </form>
-
+	  
+          <!-- <div class="col-sm-6 padded"> -->
+	    <div id="route-results"></div>
+	  <!-- </div> -->
         </div> <!-- /container -->
 
         <div class="col-sm-6 padded">
           <div id="map" style="width:400px; height:400px; display:block; margin-left:auto; margin-right:auto"></div>
         </div>
 
-
-
       </div>
     </div>
+
+    <script src="scripts/main.js"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
