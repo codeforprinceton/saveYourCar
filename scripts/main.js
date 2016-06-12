@@ -39,13 +39,13 @@ function report() {
     console.log(endLocation);    
 };
 
-locations = ["Princeton, NJ", "Philadelphia, PA"];
-from = "Princeton, NJ";
-to = "Philadelphia, PA";
+// locations = ["Princeton, NJ", "Philadelphia, PA"];
+// from = "Princeton, NJ";
+// to = "Philadelphia, PA";
 avoidLinkIds = [];
 
-console.log(geodecode(from));
-console.log(geodecode(to));
+// console.log(geodecode(from));
+// console.log(geodecode(to));
 
 
 function draw_map () {
@@ -93,32 +93,26 @@ function find_route() {
     var to = document.getElementById("endLocation").value;
 
     var notAvoidCalamities = document.getElementById("notAvoidCalamities").checked;
+    var notDisplayCalamities = document.getElementById("notDisplayCalamities").checked;
 
     console.log("checked", notAvoidCalamities);
 
     route = get_directions(from, to, []);
     shapePts = route.route.shape.shapePoints;
 
+    console.log("route 1", route);
+    console.log("route 1", route.route);
+    console.log("route 1", route.route.shape);
+
     if (notAvoidCalamities) {
 	console.log(shapePts);
-
+	
 	display_route(from, to, shapePts);
 	displayNarrative(route);
-    }
-    else {
+
+	if (!notDisplayCalamities) {
 	spacedPts = get_spaced_pts(shapePts);
-
-	// Hack for async loop
-	// PLACE_URLS = [];
-	// COUNTER = 0;
-	
 	place_urls = get_place_urls(spacedPts);
-	// get_place_urls2(spacedPts);
-
-	// place_urls = PLACE_URLS;
-	
-	// console.log("URL", place_urls.length);
-	// console.log("URL", PLACE_URLS.length);
 	unique_place_urls = uniquify(place_urls);
 	
 	for (var i=0; i<unique_place_urls.length; ++i)
@@ -138,7 +132,34 @@ function find_route() {
 	for (var i=0; i<all_issues.length; ++i)
 	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
 	
-	display_calamities(all_issues);
+	display_calamities(all_issues);	    
+	}
+    }
+    else {
+	spacedPts = get_spaced_pts(shapePts);
+	place_urls = get_place_urls(spacedPts);
+	unique_place_urls = uniquify(place_urls);
+	
+	for (var i=0; i<unique_place_urls.length; ++i)
+	    console.log(i, unique_place_urls[i]);
+
+	var all_issues = [];
+	
+	for (var i=0; i<unique_place_urls.length; ++i) {
+	    var issues = get_calamity_in_place(unique_place_urls[i]);
+	    console.log(unique_place_urls[i]);
+	    issues = issues.filter(active_issues);
+
+	    if (!notDisplayCalamities)
+		display_calamities(issues);
+	    
+	    all_issues = all_issues.concat(issues);
+	}
+	
+	for (var i=0; i<all_issues.length; ++i)
+	    console.log(i, all_issues[i], all_issues[i].lat, all_issues[i].lng);
+	
+	// display_calamities(all_issues);
 	
 	linkIds = []
 	for (var i=0; i<all_issues.length; ++i) {
@@ -147,6 +168,10 @@ function find_route() {
 	}
 	route = get_directions(from, to, linkIds);
 	displayNarrative(route);
+
+	console.log("route", route);
+	console.log("route", route.route);
+	console.log("route", route.route.shape);
 	
 	newShapePts = route.route.shape.shapePoints;
 	display_route(from, to, newShapePts);
@@ -333,9 +358,10 @@ function get_directions(from, to, avoidLinkIds) {
     
     var route;
 
+    console.log("avoid", avoidLinkIds.join());
+    
     for (var i=0; i<avoidLinkIds.length; ++i)
 	console.log("avoid", avoidLinkIds[i]);
-
     
     $.ajax({
 	url: url,
@@ -347,7 +373,7 @@ function get_directions(from, to, avoidLinkIds) {
 		"mustAvoidLinkIds" : avoidLinkIds.join()
 	      },
 	success: function(r) {
-	    // console.log(r.route.shape);
+	    console.log(r.route.shape);
 	    route = r; 
 	},
 	async: false
@@ -374,18 +400,22 @@ function display_route(from, to, shapePoints) {
 
 	console.log("from", fromLatLng[0]);
 	
-	// var poiFrom = new MQA.Poi({ lat:fromLatLng[0],
-	// 			    lng:fromLatLng[1] });
-	// poiFrom.setRollOverContent("Start");
+	var poiFrom = new MQA.Poi({ lat:fromLatLng[0],
+				    lng:fromLatLng[1] });
+	poiFrom.setRolloverContent("Start");
+	poiFrom.setIcon(new MQA.Icon('http://www.mapquestapi.com/staticmap/geticon?uri=poi-green_1.png', 20, 29));
+	//poiFrom.setIcon(new MQA.Icon('http://www.mapquestapi.com/staticmap/geticon?uri=poi-green_1.png'));
+	
+	var poiTo = new MQA.Poi({ lat:toLatLng[0],
+				  lng:toLatLng[1] });
+	poiTo.setRolloverContent("End");
+	poiTo.setIcon(new MQA.Icon('http://www.mapquestapi.com/staticmap/geticon?uri=poi-green_1.png', 20, 29));
+	//poiTo.setIcon(new MQA.Icon('http://www.mapquestapi.com/staticmap/geticon?uri=poi-green_1.png'));
 
-	// var poiTo = new MQA.Poi({ lat:toLatLng[0],
-	// 			  lng:toLatLng[1] });
-	// poiTo.setRollOverContent("End");
-
-	// pois = [poiFrom, poiTo];
+	pois = [poiFrom, poiTo];
 	
 	var rc = new MQA.RouteCollection({
-	    pois: [],
+	    pois: pois,
 	    line: shapePoints,
 	    display: {
 		color: '#404040',
