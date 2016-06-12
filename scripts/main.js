@@ -1,6 +1,7 @@
 var KEY = "bi9S3lJX0mZthOJrwFkdamXSaLDWNM18"
 var INC = 0.005 // spacing of pts along route before checking for new place_url
 var MAP; // global map, since I don't know how else to share it
+var MAX_LOCS = 3;
 
 var PLACE_URLS=[];
 var COUNTER = 0;
@@ -249,8 +250,11 @@ function get_place_urls(spacedPts) {
 		    result = r;
 		}
 	       });
-	place_urls.push(result.places[0].url_name)
-	place_urls.push(result.places[1].url_name)
+
+	max_loc = Math.min(result.places.length, MAX_LOCS);
+	for (var j=0; j<max_loc; ++j) {
+	    place_urls.push(result.places[j].url_name);
+	}
     }
     // console.log("Place URLS");
     // console.log("lengths", spacedLats.length, place_urls.length);
