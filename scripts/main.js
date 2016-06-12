@@ -331,6 +331,7 @@ function get_place_urls(spacedPts) {
 		    result = r;
 		    max_loc = Math.min(result.places.length, MAX_LOCS);
 		    for (var j=0; j<max_loc; ++j) {
+			console.log("Spaced Point", i, result.places[j].url_name); 
 			PLACE_URLS.push(result.places[j].url_name);
 		    }
 		}
