@@ -374,13 +374,16 @@ function display_route(from, to, shapePoints) {
 	
 	var poiFrom = new MQA.Poi({ lat:fromLatLng[0],
 				    lng:fromLatLng[1] });
-	poiFrom.setRollOverContent(from);
+	poiFrom.setRollOverContent("Start");
+
 	var poiTo = new MQA.Poi({ lat:toLatLng[0],
-				    lng:toLatLng[1] });
-	poiTo.setRollOverContent(to);
+				  lng:toLatLng[1] });
+	poiTo.setRollOverContent("End");
+
+	pois = [poiFrom, poiTo];
 	
 	var rc = new MQA.RouteCollection({
-	    pois: [poiFrom, poiTo],
+	    pois: pois,
 	    line: shapePoints,
 	    display: {
 		color: '#404040',
